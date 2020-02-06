@@ -1,0 +1,187 @@
+﻿@model IEnumerable<SMCanteenApp.Models.ViewSalesItemListDatewise>
+
+@{
+    ViewBag.Title = "Index";
+    double payable = 0;
+    double Total = 0;
+}
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<br />
+
+
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
+
+<div class="row" style="visibility:visible; padding-left: -30px;margin-left:0px;margin-right:0px;min-height:150px; color:black">
+ 
+
+    <div class="col-md-4" style="padding-left:0px;padding-right:0px">
+
+        <h4 style="font-family:'Times New Roman'; background-color:darkgray;height:30px; padding:3px"><center><b><u> Sales Filter</u></b></center></h4>
+        <table class="table table-responsive" style="margin-bottom:0px; font-weight:200; font-family:'Times New Roman'; color:black; font-size:large">
+
+          
+            <tr>
+                <td>From:</td>
+                <td><input type="date" name="Date1" class="form-control" id="Date1" /></td>
+            </tr>
+            <tr>
+                <td>To:</td>
+                <td><input type="date" name="Date2" class="form-control" id="Date2" /></td>
+
+
+            </tr>
+
+        </table>
+    </div>
+    <div class="col-md-8" style="padding-right:0px;">
+        <h4 style="font-family:'Times New Roman'; background-color:darkgray;height:30px; padding:3px"><center><b><u> Sales List</u></b></center></h4>
+
+        <table class="table table-responsive table-bordered" style="margin-bottom: 0px; font-family:'Times New Roman'; font-size:medium;color:black; display: block; max-height: 450px;overflow-y: scroll">
+
+
+
+            <thead>
+                <tr>
+                    <th>
+                        Item Code
+                    </th>
+                    <th>
+                        Item Name
+                    </th>
+
+                    <th>
+                       Item Image
+                    </th>
+
+                    <th>
+                        Quantity
+                    </th>
+                    <th>
+                        Price(Cash)
+                    </th>
+                    <th>
+                        Price(Due)
+                    </th>
+
+                    <th>
+                        Total Price
+                    </th>
+                   
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                @if (Model !=null)
+                {
+                    foreach (var item in Model)
+                    {
+                        //payable = item.Amount + item.Discount;
+                        Total = item.TotalPrice;
+                        <tr>
+
+                            <td>
+                                @item.ItemCode
+                            </td>
+                            <td>
+                                @item.ItemName
+                            </td>
+                            <td>
+                                <a href="~/Image/@item.FileName">
+                                    <img src="~/Image/@item.FileName" alt="N/A" width="100" height="50">
+                                </a> 
+                            </td>
+
+
+                            <td>
+                                @item.Quantity
+                            </td>
+                            <td>
+                                @item.CashPrice
+                            </td>
+                            <td>
+                                @item.DuePrice
+                            </td>
+                            <td>
+                                @item.TotalPrice
+                            </td>
+
+                        </tr>
+                    }
+
+                    <tr style="color:darkblue">
+                        <td colspan="4">Total</td>
+                        <td>@Model.Sum(a => a.CashPrice)</td>
+                        <td>@Model.Sum(a => a.DuePrice)</td>
+                        <td>@Model.Sum(a => a.TotalPrice)</td>
+
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+
+    </div>
+
+
+
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+    <script type="text/javascript">
+            $(document).ready(function () {
+                
+            $("#Date1,#Date2").change(function () {
+
+               
+               
+                    var Date1 = $("#Date1").val();
+                    var Date2 = $("#Date2").val();
+                   
+                    $("#myTable").show();
+                    $("#tableBody").empty();
+                var json = { Date1: Date1, Date2: Date2};
+
+                    $.ajax({
+                        type: "POST",
+                        url: '/Items/GetSalesByDate',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function (data) {
+                            var Total = 0;
+                            var TotalD = 0;
+                            var TotalC = 0;
+                                $.each(data, function (key, val) {
+                                    //Price = val.Amount + val.Discount;
+                                    Total = Total + val.TotalPrice;
+                                    TotalD = TotalD + val.DuePrice;
+                                    TotalC = TotalC + val.CashPrice;
+
+                                    $("#tableBody").append('<tr><td>' + val.ItemCode + '</td><td>' + val.ItemName + '</td><td><a href="/Image/' + val.FileName + '"><img src="/Image/' + val.FileName+ '" alt="N/A" width="100" height="50"></a></td><td>' + val.Quantity + '</td><td>' + val.CashPrice + '</td><td>' + val.DuePrice + '</td><td>' + val.TotalPrice + '</td></tr>');
+
+
+                                });
+
+                            $("#tableBody").append('<tr><td colspan="4">Total</td><td>' + TotalC + '</td><td>' + TotalD + '</td><td>' + Total + '</td></tr>');
+
+                        }
+                    });
+                });
+
+
+
+
+
+            });
+
+
+    </script>
+}

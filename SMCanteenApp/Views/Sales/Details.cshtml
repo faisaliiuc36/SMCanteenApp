@@ -1,0 +1,172 @@
+﻿@model SMCanteenApp.Models.Sale
+
+@{
+    ViewBag.Title = "Details";
+    double Amount = Model.Amount + Model.Discount;
+}
+
+
+<div class="row" style="visibility:visible;min-height:150px; color:black">
+    <div class="col-md-4">
+
+        <h4 style="font-family:'Times New Roman'; background-color:darkgray;height:30px; padding:3px"><center><b><u> Sales Details</u></b></center></h4>
+        <dl class="dl-horizontal" style="font-family:'Times New Roman'; font-size:large">
+
+            <dt>
+                @Html.DisplayNameFor(model => model.SalesId)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.SalesId)
+            </dd>
+            @if (Model.EmployeeId == null)
+            {
+                <dt>
+                    Sales Type
+                </dt>
+
+                <dd>
+                    Cash
+                </dd>
+            }
+            else
+            {
+                <dt>
+                    Sales Type
+                </dt>
+
+                <dd>
+                    Due
+                </dd>
+                <dt>
+                    Employee Name
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Employee.EmpFullName)
+                </dd>
+                <dt>
+                    Employee Id
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Employee.Emp_Id)
+                </dd>
+            }
+
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Date)
+            </dt>
+
+            <dd>
+                @Model.Date.ToString("dd-MMMM-yyyy")
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Note)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Note)
+            </dd>
+           
+
+
+        </dl>
+    </div>
+    <div class="col-md-8">
+        <h4 style="font-family:'Times New Roman'; background-color:darkgray;height:30px; padding:3px"><center><b><u> Item List</u></b></center></h4>
+        <table class="table table-bordered" style="font-family:'Times New Roman'; font-size:large">
+
+            <tr>
+                <td>
+                    @Html.Label("Item Code")
+                </td>
+                <td>
+                    @Html.Label("Item Name")
+                </td>
+                <td>
+                    @Html.Label("Item Image")
+                </td>
+                <td>
+                    @Html.Label("Quantity")
+                </td>
+                <td>
+                    @Html.Label("Unit Price")
+                </td>
+                <td>
+                    @Html.Label("Price")
+                </td>
+
+            </tr>
+
+
+            @if (Model.SalesItemLists.Count > 0)
+            {
+                foreach (var Sale in Model.SalesItemLists)
+                {
+                    if (Sale.Quantity != 0)
+                    {
+                        <tr>
+                            <td>
+                                @Sale.ItemId
+                            </td>
+                            <td>
+                                @Sale.Item.ItemName
+                            </td>
+                            <td>
+                                <a href="~/Image/@Sale.Item.ImageFile">
+                                    <img src="~/Image/@Sale.Item.ImageFile" alt="N/A" width="100" height="50">
+                                </a>
+                            </td>
+                            <td>
+                                @Sale.Quantity
+                            </td>
+                            <td>
+                                @Sale.Price
+                            </td>
+                            <td>
+                                @Sale.Amount
+                            </td>
+
+                        </tr>
+                    }
+                }
+            }
+
+
+
+            <tr style="color:blue">
+                <td colspan="5" style="align-content:center">Total Price</td>
+
+                <td>@Amount</td>
+            </tr>
+            <tr style="color:blue">
+                <td colspan="5" style="align-content:center">Discount</td>
+
+                <td>
+                    @Model.Discount
+                </td>
+            </tr>
+            <tr style="color:blue">
+                <td colspan="5" style="align-content:center">Total Price(Payable)</td>
+
+                <td>@Model.Amount</td>
+            </tr>
+            <tr style="color:blue;border:hidden">
+                <td colspan="5" style="align-content:center"></td>
+               
+                <td>
+                    @Html.ActionLink("Add Sales", "Create",null,new { @class = "btn btn-info", @style = "color:black"}) 
+                    @Html.ActionLink("Edit", "Edit", new { id = Model.SalesId }, new { @class = "btn btn-info", @style = "color:black" }) 
+                    @Html.ActionLink("See List", "Index",null, new { @class = "btn btn-info", @style = "color:black" })
+
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    </div>
+    <p>
+       
+    </p>

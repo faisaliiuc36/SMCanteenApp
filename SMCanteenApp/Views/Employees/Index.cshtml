@@ -1,0 +1,143 @@
+﻿@model IEnumerable<SMCanteenApp.Models.Employee>
+
+@{
+    ViewBag.Title = "Index";
+}
+<link href="~/Content/bootstrap.css" rel="stylesheet" />
+<div id="employeeList" style="padding:10px;">
+    <p>
+        <input type="button" class="btn btn-info" value="Import Employee" onclick="location.href='@Url.Action("ImportNewEmployee")'" />
+    </p>
+    <p>
+        <input type="text" name="EmpId" id="EmpId" class="form-control" placeholder="Mobile/Employee Id" />
+
+    </p>
+    <p style="color:red; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif"> @ViewBag.Message</p>
+    <h4>Employee List</h4>
+    <div class="form-group">
+        <table id="myTable" class="table table-bordered table-hover table-striped" data-searching="false" data-paging="false" data-info="false" style="background-color:azure">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Emp_Id)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.EmpFullName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.BadgeNumber)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.MobileNo)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.InActive)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Unit.Name)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Emp_Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EmpFullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BadgeNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MobileNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.InActive)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Unit.Name)
+                        </td>
+                        <td>
+
+                            @Html.ActionLink("Edit", "Edit", new { id = item.Id })|
+                            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+<div id="box" style="padding:10px;">
+
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.js"></script>
+    <script src="~/Scripts/DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
+    <script src="~/Scripts/paginator.js"></script>
+    <script src="~/Scripts/table.js"></script>
+    <script>
+        paginator({
+
+            table: document.getElementById("employeeList").getElementsByTagName("table")[0],
+
+            box: document.getElementById("box"),
+
+        });
+
+    
+         //var table = $("#myTable").DataTable();
+
+        $("#EmpId").keyup(function () {
+            var EmpId = $("#EmpId").val();
+
+                $("#myTable").show();
+                $("#tableBody").empty();
+            var json = { EmpId: EmpId };
+                $.ajax({
+                    type: "POST",
+
+                    url: '@Url.Action("GetEmployeeById", "Employees")',
+
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        $.each(data, function (key, value) {
+
+                            var InActive = "";
+                            if (value.InActive == true) {
+                                InActive = "Checked";
+                            }
+
+                            $("#tableBody").append('<tr><td>' + value.Emp_Id + '</td><td>' + value.EmpFullName + '</td><td>' + value.BadgeNumber + '</td><td>' + value.MobileNo + '</td><td><input type="checkbox" ' + InActive + ' /></td ><td>' + value.Unit + '</td><td> <a href="@Url.Action("Edit")/' + parseInt(value.Id) + '">Edit|</a><a href="@Url.Action("Delete")/' + parseInt(value.Id) + '">Delete</a></td></tr > ');
+
+                        });
+
+
+                    }
+
+                      
+            });
+
+            paginator({
+
+                table: document.getElementById("employeeList").getElementsByTagName("table")[0],
+
+                box: document.getElementById("box"),
+
+            });
+            });
+    </script>
+
+
+}

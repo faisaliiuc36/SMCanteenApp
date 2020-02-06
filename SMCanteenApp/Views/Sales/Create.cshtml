@@ -1,0 +1,327 @@
+﻿@model SMCanteenApp.Models.Sale
+
+@{
+    ViewBag.Title = "Create";
+    int i = 0;
+    if (Model.Date.Year == 001)
+    {
+        Model.Date = new DateTime(DateTime.Now.Year, DateTime.Now.Month,DateTime.Now.Day);
+    }
+}
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
+
+<div class="row" style="visibility:visible;min-height:150px; color:black">
+
+    @using (Html.BeginForm("Create", "Sales"))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(a => a.SalesId)
+        @Html.HiddenFor(a => a.Date)
+
+
+    <div class="col-md-4">
+
+        <h4 style="font-family:'Times New Roman'; background-color:darkgray;height:30px; padding:3px"><center><b><u> Sales Info</u></b></center></h4>
+        <table class="table table-responsive" style="margin-bottom:0px; font-weight:200; font-family:'Times New Roman'; color:black; font-size:large">
+            <tr>
+                <td>Employee Mobile/Id:</td>
+                <td><input type="text" id="EmployeeId" name="EmployeeId" value=@Model.EmployeeId class="form-control" /></td>
+            </tr>
+            <tr>
+
+                <td>Employee Name:</td>
+                <td><input type="text" id="EmployeeName" name="EmployeeName" class="form-control" /></td>
+
+            </tr>
+            <tr>
+                <td>Employee Mobile:</td>
+                <td><input type="text" id="EmployeeMobile" name="EmployeeMobile" class="form-control" /></td>
+
+
+            </tr>
+            @*<tr>
+                <td> Select Date:</td>
+                <td>
+                    @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control", @id = "Date" } })
+                </td>
+            </tr>*@
+            @*<tr>
+                <td> Discount:</td>
+                <td>
+                    @Html.EditorFor(model => model.Discount, new { htmlAttributes = new { @class = "form-control" } })
+                </td>
+            </tr>*@
+            <tr>
+                <td>Notes</td>
+                <td>
+                    @Html.TextAreaFor(model => model.Note, new { htmlAttributes = new { @class = "form-control" } })
+
+                </td>
+            </tr>
+
+        </table>
+    </div>
+        <div class="col-md-8">
+            <h4 style="font-family:'Times New Roman'; background-color:darkgray;height:30px; padding:3px"><center><b><u> Item List</u></b></center></h4>
+
+            <table class="table table-responsive table-bordered" style="margin-bottom: 0px; font-family:'Times New Roman'; font-size:large;color:black">
+
+
+                <tr>
+                    <td>
+                        @Html.Label("Item Code")
+                    </td>
+                    <td>
+                        @Html.Label("Item Name")
+                    </td>
+                    <td>
+                        @Html.Label("Item Image")
+                    </td>
+                    <td>
+                        @Html.Label("Quantity")
+                    </td>
+                    <td>
+                        @Html.Label("Unit Price")
+                    </td>
+                    <td>
+                        @Html.Label("Price")
+                    </td>
+
+                </tr>
+                @foreach (var item in ViewBag.ItemList)
+                {
+
+
+                    <tr>
+                        <td>
+
+                            @Html.Hidden("SalesItemLists[" + (i) + "].SalesItemId", (int)item.SalesItemId)
+                            @Html.Hidden("SalesItemLists[" + (i) + "].SalesId", (int)item.SalesId)
+                            @Html.Hidden("SalesItemLists[" + (i) + "].ItemId", (int)item.ItemId)
+                            @item.ItemId
+                        </td>
+                        <td>
+                            @item.Name
+                        </td>
+                        <td>
+
+                            <a href="~/Image/@item.ImageFile">
+                                <img src="~/Image/@item.ImageFile" alt="N/A" width="100" height="50">
+                            </a>
+                        </td>
+                        <td>
+                            @Html.TextBox("SalesItemLists[" + (i ) + "].Quantity",
+                             (int)item.Quantity, new { @class = "form-control Quantity", @type="Number", @min=0 })
+                        </td>
+                        <td>
+                            @Html.Hidden("SalesItemLists[" + (i ) + "].Price",
+                             (double)item.Price, new { @class = "form-control Price"})
+
+                            @item.Price
+                        </td>
+                        <td>
+                            @Html.Hidden("SalesItemLists[" + (i ) + "].Note",
+                             (string)item.Note, new { @class = "form-control DaysM" })
+                            <input type="Text" class="form-control ItemPrice" value=0 readonly/>
+                        </td>
+
+
+                    </tr>
+                    i = i + 1;
+
+
+
+
+
+
+                }
+                <tr style="color:blue">
+                    <td colspan="5" style="align-content:center">Total Price</td>
+
+                    <td><input type="text" style="color:blue" class="form-control" id="Total" value=0 readonly /></td>
+                </tr>
+                <tr style="color:blue">
+                    <td colspan="5" style="align-content:center">Discount</td>
+
+                    <td>
+                        @Html.EditorFor(model => model.Discount, new { htmlAttributes = new { @class = "form-control", @id="Discount", @style="color:blue" } })
+
+                    </td>
+                </tr>
+                <tr style="color:blue">
+                    <td colspan="5" style="align-content:center">Total Price(Payable)</td>
+
+                    <td><input type="text" style="color:blue" class="form-control" id="Payable" value=0 readonly/></td>
+                </tr>
+                <tr style="border:hidden">
+                    <td colspan="5"></td>
+                  
+                    <td>  <input type="submit"  value="Save" class="btn btn-primary btn-lg" id="button1" /></td>
+                </tr>
+
+            </table>
+
+
+        </div>
+  
+
+}
+    </div>
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+
+
+
+
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                var sum = 0;
+                $('.Price').each(function () {
+                    var row = $(this).closest('tr'); // Remember row
+                    var ItemPrice = parseFloat(row.find('.Quantity').val()) * parseFloat(row.find('.Price').val());
+                    //alert(ItemPrice);
+
+                    row.find('.ItemPrice').val(ItemPrice);
+                    sum += ItemPrice;
+                });
+
+                document.getElementById("Total").value = sum;
+                document.getElementById("Payable").value = sum - parseFloat($("#Discount").val());
+
+
+
+
+            $("#EmployeeId").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("GetEmployeeId","Sales")",
+                        type: "POST",
+                        dataType: "json",
+                        data: { Prefix: request.term },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+
+                                return {
+                                    label: item.Emp_Id, value: item.Id
+                                };
+
+                            }))
+
+                        }
+                    });
+
+                
+
+
+                },
+                messages: {
+                    noResults: "", results: ""
+                }
+            });
+
+  
+            $("#EmployeeId").change(function () {
+                var EmployeeId = $("#EmployeeId").val();
+                $("#EmployeeName").empty();
+                $("#EmployeeMobile").empty();
+                //$("#EmployeeId").append('<option value="">Select</option>');
+                var json = { EmployeeId: EmployeeId };
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("GetEmployeeNameById", "Sales")",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        $.each(data, function (key, val) {
+                           
+                            document.getElementById("EmployeeName").value = val.EmpFullName;
+                            document.getElementById("EmployeeMobile").value = val.MobileNo;
+                        });
+
+                    }
+                });
+            });
+
+
+
+            var EmployeeId = $("#EmployeeId").val();
+                $("#EmployeeName").empty();
+                $("#EmployeeMobile").empty();
+                //$("#EmployeeId").append('<option value="">Select</option>');
+                var json = { EmployeeId: EmployeeId };
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("GetEmployeeNameById", "Sales")",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+
+                        $.each(data, function (key, val) {
+
+                            document.getElementById("EmployeeName").value = val.EmpFullName;
+                            document.getElementById("EmployeeMobile").value = val.MobileNo;
+                        });
+
+                    }
+                });
+
+
+        });
+        $(function () {
+            $("#Date").datepicker({ dateFormat: 'dd-mm-yy' });
+        });
+        $(document).ready(function () {
+            $("#Date").attr("autocomplete", "off");
+            });
+
+
+
+            // Total
+            $(document).on('change', '.Quantity', function () {
+
+                var row = $(this).closest('tr'); // Remember row
+                //$(this).parent('td').text($(this).val());
+                row.find('.ItemPrice').text(parseFloat(row.find('.Quantity').value) * parseFloat(row.find('.Price').value)); // Calculate and put in the amount cell
+                var ItemPrice = parseFloat(row.find('.Quantity').val()) * parseFloat(row.find('.Price').val());
+                //alert(ItemPrice);
+
+                row.find('.ItemPrice').val(ItemPrice);
+                //alert(parseFloat(row.find('.Price').value));
+                //document.getElementById("Total").value = sum;
+                //document.getElementById("Payable").value = sum - parseFloat($("#Discount").val());
+
+            });
+
+            // Total
+            $(document).on('change', '.Quantity', function () {
+
+                var sum = 0;
+                $('.ItemPrice').each(function () {
+                    sum += parseFloat(this.value);
+                });
+              
+                document.getElementById("Total").value = sum;
+                document.getElementById("Payable").value = sum - parseFloat($("#Discount").val());
+
+            });
+
+            $("#Discount").change(function () {
+
+                var sum = 0;
+
+                sum = parseFloat($("#Total").val()) - parseFloat($("#Discount").val());
+                
+                document.getElementById("Payable").value = sum;
+            });
+
+           
+        </script>
+    }

@@ -1,0 +1,47 @@
+﻿
+@{
+    ViewBag.Title = "ImportNewEmployee";
+}
+
+<div style="padding:20px;">
+    <h2>Import New Employee</h2>
+
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.Label("Database Name:", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <input type="text" name="DBName" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Unit Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <input type="text" name="UnitName" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Import" class="btn btn-default" />
+                    <p style="color:red"> @ViewBag.Message</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div>
+        @Html.ActionLink("Back to List", "Index")
+    </div>
+
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

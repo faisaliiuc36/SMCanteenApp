@@ -1,0 +1,373 @@
+﻿@model IEnumerable<SMCanteenApp.Models.Sale>
+
+@{
+    ViewBag.Title = "Index";
+    double payable = 0;
+    double Total = 0;
+}
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<br />
+
+
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
+
+<div class="row" style="visibility:visible; padding-left: -30px;margin-left:0px;margin-right:0px;min-height:150px; color:black">
+    <p style="margin-bottom: 5px;">
+        @Html.ActionLink("Add New Sales", "Create",null, new { @class="btn btn-info", @style = "font-size:small;color:black" })
+    </p>
+   
+    <div class="col-md-4" style="padding-left:0px;padding-right:0px">
+
+        <h4 style="font-family:'Times New Roman'; background-color:darkgray;height:30px; padding:3px"><center><b><u> Sales Filter</u></b></center></h4>
+        <table class="table table-responsive" style="margin-bottom:0px; font-weight:200; font-family:'Times New Roman'; color:black; font-size:large">
+
+            <tr>
+                <td>Select Sales Type:</td>
+                <td>
+                    <select id="TypeId" class="form-control">
+                        <option value="0">All</option>
+                        <option value="1">Due</option>
+                        <option value="2">Cash</option>
+
+                    </select>
+                </td>
+
+
+
+            <tr>
+                <td>Employee Mobile/Id:</td>
+                <td><input type="text" id="EmployeeId" name="EmployeeId" class="form-control" /></td>
+
+            </tr>
+
+            <tr>
+                <td>Select Unit:</td>
+                <td>
+                    @Html.DropDownList("UnitId", null, "Select", htmlAttributes: new { @class = "form-control", @id = "UnitId" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>From:</td>
+                <td><input type="date" name="Date1" class="form-control" id="Date1" /></td>
+            </tr>
+            <tr>
+                <td>To:</td>
+                <td><input type="date" name="Date2" class="form-control" id="Date2" /></td>
+
+
+            </tr>
+
+        </table>
+    </div>
+    <div class="col-md-8" style="padding-right:0px;">
+        <h4 style="font-family:'Times New Roman'; background-color:darkgray;height:30px; padding:3px"><center><b><u> Sales List</u></b></center></h4>
+
+        <table class="table table-responsive table-bordered" style="margin-bottom: 0px; font-family:'Times New Roman'; font-size:small;color:black; display: block; max-height: 450px;overflow-y: scroll">
+
+
+
+            <thead>
+                <tr>
+                    <th>
+                        Sales Type
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Employee.Emp_Id)
+                    </th>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.Employee.EmpFullName)
+                    </th>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.Date)
+                    </th>
+                    <th>
+                        Price
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Discount)
+                    </th>
+
+                    <th>
+                        Price(Payable)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Note)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                @foreach (var item in Model)
+                {
+                    payable = item.Amount + item.Discount;
+                    Total = item.Amount;
+                    <tr>
+
+                        @if (item.EmployeeId == null)
+                        {
+                            <td>
+                                Cash
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                Due
+                            </td>
+                        }
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Employee.Emp_Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Employee.EmpFullName)
+                        </td>
+
+
+                        <td>
+                            @item.Date.ToString("dd-MMMM-yyyy")
+                        </td>
+                        <td>
+                            @payable
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Discount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Amount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Note)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new { id = item.SalesId }) |
+                            @Html.ActionLink("Details", "Details", new { id = item.SalesId }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = item.SalesId })
+                        </td>
+                    </tr>
+                }
+
+                <tr style="color:darkblue">
+                    <td colspan="6">Total</td>
+                    <td>@Total</td>
+                    <td colspan="2"></td>
+                </tr>
+            </tbody>
+
+        </table>
+
+
+    </div>
+
+
+
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+    <script type="text/javascript">
+            $(document).ready(function () {
+                $("#EmployeeId").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: "@Url.Action("GetEmployeeId","Sales")",
+                            type: "POST",
+                            dataType: "json",
+                            data: { Prefix: request.term },
+                            success: function (data) {
+                                response($.map(data, function (item) {
+
+                                    return { label: item.Emp_Id, value: item.Id };
+
+
+                                }))
+
+                            }
+                        });
+                    },
+                    messages: {
+                        noResults: "", results: ""
+                    }
+                });
+
+                $("#EmployeeId").change(function () {
+                    var Price = 0;
+
+                    var EmployeeId = $("#EmployeeId").val();
+                    var TypeId = $("#TypeId").val();
+                    var Date1 = $("#Date1").val();
+                    var Date2 = $("#Date2").val();
+                    var UnitId = $("#UnitId").val();
+                    $("#myTable").show();
+                    $("#tableBody").empty();
+
+                    if (EmployeeId == null || EmployeeId == '') {
+                        var json = { Date1: Date1, Date2: Date2, UnitId: UnitId, TypeId: TypeId };
+
+                        $.ajax({
+                            type: "POST",
+                            url: '/Sales/GetSalesByUnitNDate',
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(json),
+                            success: function (data) {
+
+                                var Total = 0;
+                                $.each(data, function (key, val) {
+                                    //Price = val.Amount + val.Discount;
+                                    Total = Total + val.Payable;
+
+                                    $("#tableBody").append('<tr><td>' + val.Type + '</td><td>' + val.EmpId + '</td><td>' + val.Name + '</td><td>' + val.Date + '</td><td>' + val.Price + '</td><td>' + val.Discount + '</td><td>' + val.Payable + '</td><td>' + val.Note + '</td><td> <a href="@Url.Action("Edit")/' + parseInt(val.SalesId) + '">Edit|</a><a href="@Url.Action("Details")/' + parseInt(val.SalesId) + '">Details|</a><a href="@Url.Action("Delete")/' + parseInt(val.SalesId) + '">Delete</a></td></tr>');
+
+
+                                });
+
+                                $("#tableBody").append('<tr><td colspan="6">Total</td><td>' + Total + '</td><td colspan="2"></td></tr>');
+
+                            }
+                        });
+                    }
+                    else {
+                        var json = { EmployeeId: EmployeeId, Date1: Date1, Date2: Date2, TypeId: TypeId };
+
+                        $.ajax({
+                            type: "POST",
+                            url: '/Sales/GetSalesByEmployeeNDate',
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(json),
+                            success: function (data) {
+
+                                var Total = 0;
+                                $.each(data, function (key, val) {
+                                    //Price = val.Amount + val.Discount;
+                                    Total = Total + val.Payable;
+
+                                    $("#tableBody").append('<tr><td>' + val.Type + '</td><td>' + val.EmpId + '</td><td>' + val.Name + '</td><td>' + val.Date + '</td><td>' + val.Price + '</td><td>' + val.Discount + '</td><td>' + val.Payable + '</td><td>' + val.Note + '</td><td> <a href="@Url.Action("Edit")/' + parseInt(val.SalesId) + '">Edit|</a><a href="@Url.Action("Details")/' + parseInt(val.SalesId) + '">Details|</a><a href="@Url.Action("Delete")/' + parseInt(val.SalesId) + '">Delete</a></td></tr>');
+
+
+                                });
+
+                                $("#tableBody").append('<tr><td colspan="6">Total</td><td>' + Total + '</td><td colspan="2"></td></tr>');
+
+                            }
+                        });
+                    }
+                });
+
+                $("#UnitId").change(function () {
+
+
+
+                    var Date1 = $("#Date1").val();
+                    var Date2 = $("#Date2").val();
+                    var UnitId = $("#UnitId").val();
+                    var TypeId = $("#TypeId").val();
+                    var EmployeeId = $("#EmployeeId").val();
+                    $("#myTable").show();
+                    $("#tableBody").empty();
+                    if (UnitId == null || UnitId == '') {
+                        var json = { EmployeeId: EmployeeId, Date1: Date1, Date2: Date2, TypeId: TypeId };
+
+                    $.ajax({
+                        type: "POST",
+                        url: '/Sales/GetSalesByEmployeeNDate',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function (data) {
+
+
+                            var Total = 0;
+                                $.each(data, function (key, val) {
+                                    //Price = val.Amount + val.Discount;
+                                    Total = Total + val.Payable;
+
+                                    $("#tableBody").append('<tr><td>' + val.Type + '</td><td>' + val.EmpId + '</td><td>' + val.Name + '</td><td>' + val.Date + '</td><td>' + val.Price + '</td><td>' + val.Discount + '</td><td>' + val.Payable + '</td><td>' + val.Note + '</td><td> <a href="@Url.Action("Edit")/' + parseInt(val.SalesId) + '">Edit|</a><a href="@Url.Action("Details")/' + parseInt(val.SalesId) + '">Details|</a><a href="@Url.Action("Delete")/' + parseInt(val.SalesId) + '">Delete</a></td></tr>');
+
+
+                                });
+
+                            $("#tableBody").append('<tr><td colspan="6">Total</td><td>' + Total + '</td><td colspan="2"></td></tr>');
+
+                        }
+                    });
+                    }
+                    else {
+                        var json = { Date1: Date1, Date2: Date2, UnitId: UnitId, TypeId: TypeId };
+
+                    $.ajax({
+                        type: "POST",
+                        url: '/Sales/GetSalesByUnitNDate',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function (data) {
+
+
+                            var Total = 0;
+                                $.each(data, function (key, val) {
+                                    //Price = val.Amount + val.Discount;
+                                    Total = Total + val.Payable;
+
+                                    $("#tableBody").append('<tr><td>' + val.Type + '</td><td>' + val.EmpId + '</td><td>' + val.Name + '</td><td>' + val.Date + '</td><td>' + val.Price + '</td><td>' + val.Discount + '</td><td>' + val.Payable + '</td><td>' + val.Note + '</td><td> <a href="@Url.Action("Edit")/' + parseInt(val.SalesId) + '">Edit|</a><a href="@Url.Action("Details")/' + parseInt(val.SalesId) + '">Details|</a><a href="@Url.Action("Delete")/' + parseInt(val.SalesId) + '">Delete</a></td></tr>');
+
+
+                                });
+
+                            $("#tableBody").append('<tr><td colspan="6">Total</td><td>' + Total + '</td><td colspan="2"></td></tr>');
+
+                        }
+                    });
+                    }
+                });
+
+            $("#TypeId,#Date1,#Date2").change(function () {
+
+                var EmployeeId = $("#EmployeeId").val();
+                var TypeId = $("#TypeId").val();
+                    var Date1 = $("#Date1").val();
+                    var Date2 = $("#Date2").val();
+                    var UnitId = $("#UnitId").val();
+                    $("#myTable").show();
+                    $("#tableBody").empty();
+                var json = { EmployeeId: EmployeeId, Date1: Date1, Date2: Date2, UnitId: UnitId, TypeId: TypeId};
+
+                    $.ajax({
+                        type: "POST",
+                        url: '/Sales/GetSalesByDate',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function (data) {
+                            var Total = 0;
+                                $.each(data, function (key, val) {
+                                    //Price = val.Amount + val.Discount;
+                                    Total = Total + val.Payable;
+
+                                    $("#tableBody").append('<tr><td>' + val.Type + '</td><td>' + val.EmpId + '</td><td>' + val.Name + '</td><td>' + val.Date + '</td><td>' + val.Price + '</td><td>' + val.Discount + '</td><td>' + val.Payable + '</td><td>' + val.Note + '</td><td> <a href="@Url.Action("Edit")/' + parseInt(val.SalesId) + '">Edit|</a><a href="@Url.Action("Details")/' + parseInt(val.SalesId) + '">Details|</a><a href="@Url.Action("Delete")/' + parseInt(val.SalesId) + '">Delete</a></td></tr>');
+
+
+                                });
+
+                            $("#tableBody").append('<tr><td colspan="6">Total</td><td>' + Total + '</td><td colspan="2"></td></tr>');
+
+                        }
+                    });
+                });
+
+
+
+
+
+            });
+
+
+    </script>
+}
