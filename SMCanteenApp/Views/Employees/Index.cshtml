@@ -7,6 +7,7 @@
 <div id="employeeList" style="padding:10px;">
     <p>
         <input type="button" class="btn btn-info" value="Import Employee" onclick="location.href='@Url.Action("ImportNewEmployee")'" />
+        <input type="button" class="btn btn-info" value="Add Employee" onclick="location.href='@Url.Action("Create")'" />
     </p>
     <p>
         <input type="text" name="EmpId" id="EmpId" class="form-control" placeholder="Mobile/Employee Id" />
@@ -24,9 +25,7 @@
                     <th>
                         @Html.DisplayNameFor(model => model.EmpFullName)
                     </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.BadgeNumber)
-                    </th>
+                   
                     <th>
                         @Html.DisplayNameFor(model => model.MobileNo)
                     </th>
@@ -49,9 +48,7 @@
                         <td>
                             @Html.DisplayFor(modelItem => item.EmpFullName)
                         </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.BadgeNumber)
-                        </td>
+                    
                         <td>
                             @Html.DisplayFor(modelItem => item.MobileNo)
                         </td>
@@ -119,7 +116,7 @@
                                 InActive = "Checked";
                             }
 
-                            $("#tableBody").append('<tr><td>' + value.Emp_Id + '</td><td>' + value.EmpFullName + '</td><td>' + value.BadgeNumber + '</td><td>' + value.MobileNo + '</td><td><input type="checkbox" ' + InActive + ' /></td ><td>' + value.Unit + '</td><td> <a href="@Url.Action("Edit")/' + parseInt(value.Id) + '">Edit|</a><a href="@Url.Action("Delete")/' + parseInt(value.Id) + '">Delete</a></td></tr > ');
+                            $("#tableBody").append('<tr><td>' + value.Emp_Id + '</td><td>' + value.EmpFullName +'</td><td>' + value.MobileNo + '</td><td><input type="checkbox" ' + InActive + ' /></td ><td>' + value.Unit + '</td><td> <a href="@Url.Action("Edit")/' + parseInt(value.Id) + '">Edit|</a><a href="@Url.Action("Delete")/' + parseInt(value.Id) + '">Delete</a></td></tr > ');
 
                         });
 

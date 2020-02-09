@@ -12,13 +12,11 @@ namespace SMCanteenApp.Models
 		public int Id { get; set; }
 
 		[Display(Name = "Employee Id")]
-		public int Emp_Id { get; set; }
+		public string Emp_Id { get; set; }
 
 		[Display(Name = "Employee Full Name")]
 		public string EmpFullName { get; set; }
 
-		[Display(Name = "Badge Number")]
-		public string BadgeNumber { get; set; }
 
 		[Display(Name = "Mobile No")]
 		public string MobileNo { get; set; }

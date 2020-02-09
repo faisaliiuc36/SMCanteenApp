@@ -175,6 +175,14 @@
     <Compile Include="Migrations\202002030624173_CreateUnit.designer.cs">
       <DependentUpon>202002030624173_CreateUnit.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202002090947201_DeleteEmployeeBadgeNo.cs" />
+    <Compile Include="Migrations\202002090947201_DeleteEmployeeBadgeNo.designer.cs">
+      <DependentUpon>202002090947201_DeleteEmployeeBadgeNo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202002091042171_UpdateEmployeeId.cs" />
+    <Compile Include="Migrations\202002091042171_UpdateEmployeeId.designer.cs">
+      <DependentUpon>202002091042171_UpdateEmployeeId.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\Item.cs" />
@@ -346,6 +354,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202002030624173_CreateUnit.resx">
       <DependentUpon>202002030624173_CreateUnit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002090947201_DeleteEmployeeBadgeNo.resx">
+      <DependentUpon>202002090947201_DeleteEmployeeBadgeNo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002091042171_UpdateEmployeeId.resx">
+      <DependentUpon>202002091042171_UpdateEmployeeId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -13,7 +13,7 @@ namespace SMCanteenApp.Models
 	
 		public string Type { get; set; }
 		public string Name { get; set; }
-		public int? EmpId { get; set; }
+		public string EmpId { get; set; }
 
 		public string Date { get; set; }
 

@@ -240,20 +240,12 @@ namespace SMCanteenApp.Controllers
 
 		public JsonResult GetEmployeeId(string Prefix)
 		{
-			int id = 0;
-			try
-			{
-				id = Convert.ToInt32(Prefix);
-			}
-			catch
-			{
-
-			}
+			
 			//Note : you can bind same list from database  
 			List<Employee> employees = db.employees.ToList();
 			//Searching records from list using LINQ query  
 			var emplIst = (from N in employees
-							   where N.Emp_Id.Equals(id) || N.MobileNo.Contains(Prefix)
+							   where N.Emp_Id.Contains(Prefix) || N.MobileNo.Contains(Prefix)
 							   select new {N.Id, N.Emp_Id, N.EmpFullName, N.MobileNo });
 			return Json(emplIst, JsonRequestBehavior.AllowGet);
 		}

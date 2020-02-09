@@ -1,19 +1,18 @@
-﻿using System;
+﻿using CrystalDecisions.CrystalReports.Engine;
+using SMCanteenApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using SMCanteenApp.Models;
-using CrystalDecisions.CrystalReports.Engine;
-using System.IO;
 
 namespace SMCanteenApp.Controllers
 {
-    public class EmployeesController : Controller
+	public class EmployeesController : Controller
     {
         private SMCanteenDBContext db = new SMCanteenDBContext();
 
@@ -99,7 +98,7 @@ namespace SMCanteenApp.Controllers
         {
             return View(db.employees.ToList());
         }
-		private List<Employee> GetNewEmployee(string DBName, string UnitName)
+		private List<Employee> GetNewEmployee(string DBName, string UnitName, string Prefix)
 		{
 			List<Employee> employees = new List<Employee>();
 
@@ -108,11 +107,11 @@ namespace SMCanteenApp.Controllers
 
 
 			//string connectionString = @"Data Source=10.10.0.84/"+DBName+";Initial Catalog=SecurityAttendanceDB;Persist Security Info=True;User ID=sa;Password=SM3xpress20";
-			string connectionString = @"Data Source=10.10.0.84\SQLEXPRESS;Initial Catalog="+DBName+";Persist Security Info=True;User ID=sa;Password=SM3xpress20";
+			string connectionString = @"Data Source=10.10.1.176;Initial Catalog=" + DBName+";Persist Security Info=True;User ID=sa;Password=SM3xpress20";
 			//string connectionString = @"Data Source=10.10.0.84\SQLEXPRESS;Initial Catalog=SaadMusaAttendance;Persist Security Info=True;User ID=sa;Password=SM3xpress20";
 			SqlConnection connection = new SqlConnection(connectionString);
 
-			string query = "select Emp_Id,BadgeNumber, EmpFullName,PhoneNumber,ActiveStatus from employees";
+			string query = "select EmployeeId,EmployeeFullName,PhoneNumber,ActiveStatus from Employee";
 
 			SqlCommand command = new SqlCommand(query, connection);
 			//int UpdateRows = 0;
@@ -124,12 +123,26 @@ namespace SMCanteenApp.Controllers
 				{
 
 					Employee emp = new Employee();
-					emp.Emp_Id = (int)reader["Emp_Id"];
-					bool IsActive = (bool)reader["ActiveStatus"];
-					emp.BadgeNumber = reader["BadgeNumber"].ToString();
-					emp.EmpFullName = reader["EmpFullName"].ToString();
+				        int empId= (int)reader["EmployeeId"];
+
+					emp.Emp_Id = Prefix + empId;
+					bool IsActive = false;
+					try
+					{
+						 IsActive = (bool)reader["ActiveStatus"];
+					}
+					catch
+					{
+
+					}
+					//emp.BadgeNumber = reader["BadgeNumber"].ToString();
+					emp.EmpFullName = reader["EmployeeFullName"].ToString();
 					emp.MobileNo = reader["PhoneNumber"].ToString();
-					emp.InActive= (bool)reader["ActiveStatus"];
+
+					
+						emp.InActive =Convert.ToBoolean(IsActive);
+					
+					
 
 					employees.Add(emp);
 
@@ -143,7 +156,7 @@ namespace SMCanteenApp.Controllers
 
 
 
-			List<Employee> employees2 = employees.Where(a => a.BadgeNumber.StartsWith("100000")).ToList();
+			List<Employee> employees2 = employees.ToList();
 
 
 
@@ -166,13 +179,13 @@ namespace SMCanteenApp.Controllers
 			return View();
 		}
 		[HttpPost]
-		public ActionResult ImportNewEmployee(string DBName, string UnitName)
+		public ActionResult ImportNewEmployee(string DBName, string UnitName, string Prefix)
 		{
 
 			List<Employee> employees = new List<Employee>();
 			try
 			{
-				employees = GetNewEmployee(DBName, UnitName);
+				employees = GetNewEmployee(DBName, UnitName, Prefix);
 			}
 			catch
 			{
@@ -180,7 +193,7 @@ namespace SMCanteenApp.Controllers
 				return View();
 			}
 
-
+			//employees = GetNewEmployee(DBName, UnitName);
 			int UpdateRows = 0;
 			int AddRows = 0;
 
@@ -277,7 +290,8 @@ namespace SMCanteenApp.Controllers
         // GET: Employees/Create
         public ActionResult Create()
         {
-            return View();
+			ViewBag.UnitId = new SelectList(db.units, "UnitId", "Name");
+			return View();
         }
 
         // POST: Employees/Create
@@ -285,7 +299,7 @@ namespace SMCanteenApp.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Emp_Id,EmpFullName,BadgeNumber,MobileNo")] Employee employee)
+        public ActionResult Create( Employee employee)
         {
             if (ModelState.IsValid)
             {
@@ -293,8 +307,8 @@ namespace SMCanteenApp.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
-            return View(employee);
+			ViewBag.UnitId = new SelectList(db.units, "UnitId", "Name", employee.UnitId);
+			return View(employee);
         }
 
         // GET: Employees/Edit/5
@@ -309,7 +323,8 @@ namespace SMCanteenApp.Controllers
             {
                 return HttpNotFound();
             }
-            return View(employee);
+			ViewBag.UnitId = new SelectList(db.units, "UnitId", "Name", employee.UnitId);
+			return View(employee);
         }
 
         // POST: Employees/Edit/5
@@ -325,7 +340,8 @@ namespace SMCanteenApp.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(employee);
+			ViewBag.UnitId = new SelectList(db.units, "UnitId", "Name", employee.UnitId);
+			return View(employee);
         }
 
         // GET: Employees/Delete/5
@@ -366,30 +382,16 @@ namespace SMCanteenApp.Controllers
 
 		public JsonResult GetEmployeeById(string EmpId)
 		{
-			try
-			{
-				int empid = Convert.ToInt32(EmpId);
-				List<Employee> employees = db.employees.Where(a => a.Emp_Id==empid || a.MobileNo==EmpId).ToList();
+			
+				List<Employee> employees = db.employees.Where(a => a.Emp_Id.Contains(EmpId) || a.MobileNo.Contains(EmpId)).ToList();
 				List<ViewEmployee> viewEmployees = new List<ViewEmployee>();
 				foreach(Employee employee in employees)
 				{
-					ViewEmployee viewEmployee = new ViewEmployee { Id = employee.Id, EmpFullName = employee.EmpFullName, BadgeNumber = employee.BadgeNumber, Emp_Id = employee.Emp_Id, InActive = employee.InActive, MobileNo = employee.MobileNo, Unit = employee.Unit.Name };
+					ViewEmployee viewEmployee = new ViewEmployee { Id = employee.Id, EmpFullName = employee.EmpFullName,Emp_Id = employee.Emp_Id, InActive = employee.InActive, MobileNo = employee.MobileNo, Unit = employee.Unit.Name };
 					viewEmployees.Add(viewEmployee);
 				}
 				return Json(viewEmployees, JsonRequestBehavior.AllowGet);
-			}
-			catch
-			{
-				List<Employee> employees = db.employees.Where(a => a.MobileNo == EmpId).ToList();
-
-				List<ViewEmployee> viewEmployees = new List<ViewEmployee>();
-				foreach (Employee employee in employees)
-				{
-					ViewEmployee viewEmployee = new ViewEmployee { Id = employee.Id, EmpFullName = employee.EmpFullName, BadgeNumber = employee.BadgeNumber, Emp_Id = employee.Emp_Id, InActive = employee.InActive, MobileNo = employee.MobileNo, Unit = employee.Unit.Name };
-					viewEmployees.Add(viewEmployee);
-				}
-				return Json(viewEmployees, JsonRequestBehavior.AllowGet);
-			}
+			
 		}
 	}
 }

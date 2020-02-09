@@ -8,7 +8,7 @@ namespace SMCanteenApp.Models
 	public class ViewEmployeeDueReport
 	{
 		public int SL { get; set; }
-		public int EmpId { get; set; }
+		public string EmpId { get; set; }
 		public string EmpName { get; set; }
 		public string MobileNo { get; set; }
 		public double Due { get; set; }
